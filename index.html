@@ -34,7 +34,7 @@ footer{text-align:center;color:#888;font-size:12px;padding:25px}
 <footer>Alguns links podem ser links de afiliado. A compra é efetuada diretamente no parceiro.</footer>
 <script>
 const SHEET_CSV_URL="https://drive.google.com/file/d/1sL07gHVzGu5p84culnJA-kWCXbedgA6n/view?usp=sharing";
-const BRAND_NAME="Produtos recomendados";
+const BRAND_NAME="SOFY 40+";
 const SUBTITLE="As nossas sugestões, com ligação direta às lojas parceiras.";
 let products=[],selectedCategory="";
 function parseCSV(t){let a=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let x=t[i],n=t[i+1];if(x=='"'&&q&&n=='"'){c+='"';i++}else if(x=='"')q=!q;else if(x==','&&!q){r.push(c);c=""}else if((x=='\n'||x=='\r')&&!q){if(x=='\r'&&n=='\n')i++;r.push(c);if(r.some(v=>v.trim()))a.push(r);r=[];c=""}else c+=x}if(c||r.length){r.push(c);a.push(r)}let h=a.shift().map(v=>v.trim().toLowerCase());return a.map(v=>Object.fromEntries(h.map((k,i)=>[k,(v[i]||"").trim()])))}
