@@ -33,7 +33,15 @@ footer{text-align:center;color:#888;font-size:12px;padding:25px}
 </main>
 <footer>Alguns links podem ser links de afiliado. A compra é efetuada diretamente no parceiro.</footer>
 <script>
-const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1EOmLMeyr1qAnZreTuKBlGpbbcYQzy-HrH9Nlu7U2ato/export?format=csv&gid=0";
+/* IMPORTANTE:
+   O URL abaixo tem de ser o de EXPORTAÇÃO em CSV da Google Sheet, não o link de partilha/visualização.
+   Formato: https://docs.google.com/spreadsheets/d/SEU_ID/export?format=csv&gid=SEU_GID
+   - SEU_ID: o ID que aparece no URL da folha (entre /d/ e /edit)
+   - gid=0 corresponde normalmente à primeira aba; se os dados estiverem noutra aba, muda o gid
+     (vê o número depois de "gid=" no URL da folha quando tens essa aba aberta)
+   A folha também tem de estar partilhada como "Qualquer pessoa com o link" (leitor).
+*/
+const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1sL07gHVzGu5p84culnJA-kWCXbedgA6n/export?format=csv&gid=0";
 const BRAND_NAME="SOFY 40+";
 const SUBTITLE="As nossas sugestões, com ligação direta às lojas parceiras.";
 let products=[],selectedCategory="";
@@ -42,13 +50,13 @@ function num(v){return parseFloat(String(v||"").replace(/[^\d,.-]/g,"").replace(
 function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function demo(){return[{ativo:"SIM",nome:"Produto de exemplo",categoria:"Destaques",imagem:"https://placehold.co/700x700?text=Produto",preco:"199,90 €",preco_anterior:"249,90 €",descricao:"Substitua este produto pelos seus dados.",parceiro:"Loja parceira",url:"https://example.com",destaque:"SIM"}]}
 async function load(){products=SHEET_CSV_URL.startsWith("COLE_")?demo():parseCSV(await(await fetch(SHEET_CSV_URL)).text());buildCats();render()}
-function buildCats(){let c=[...new Set(products.filter(p=>p.ativo.toUpperCase()=="SIM").map(p=>p.categoria).filter(Boolean))].sort();document.getElementById("cats").innerHTML='<button class="active" onclick="setCat(this,\'\')">Todos</button>'+c.map(x=>'<button onclick="setCat(this,\\''+esc(x)+'\\')">'+esc(x)+'</button>').join("")}
+function buildCats(){let c=[...new Set(products.filter(p=>p.ativo.toUpperCase()=="SIM").map(p=>p.categoria).filter(Boolean))].sort();document.getElementById("cats").innerHTML='<button class="active" onclick="setCat(this,\'\')">Todos</button>'+c.map(x=>'<button onclick="setCat(this,\''+esc(x)+'\')">'+esc(x)+'</button>').join("")}
 function setCat(e,c){selectedCategory=c;document.querySelectorAll(".cats button").forEach(x=>x.classList.remove("active"));e.classList.add("active");render()}
 function render(){let q=document.getElementById("search").value.toLowerCase(),s=document.getElementById("sort").value;
 let a=products.filter(p=>p.ativo.toUpperCase()=="SIM"&&(!selectedCategory||p.categoria==selectedCategory)&&(!q||[p.nome,p.descricao,p.parceiro,p.categoria].join(" ").toLowerCase().includes(q)));
 a.sort((x,y)=>s=="priceAsc"?num(x.preco)-num(y.preco):s=="priceDesc"?num(y.preco)-num(x.preco):s=="name"?x.nome.localeCompare(y.nome,"pt"):((y.destaque||"").toUpperCase()=="SIM")-((x.destaque||"").toUpperCase()=="SIM"));
 document.getElementById("count").textContent=a.length+" produto"+(a.length==1?"":"s");document.getElementById("grid").innerHTML=a.length?a.map(card).join(""):'<div class="empty">Nenhum produto encontrado.</div>'}
-function card(p){let o=num(p.preco_anterior),v=num(p.preco),d=o>v?Math.round((1-v/o)*100):0;return '<article class="card"><div class="pic"><img src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">'+((p.destaque||"").toUpperCase()=="SIM"?'<span class="badge">⭐ Destaque</span>':'')+'</div><div class="body"><div class="cat">'+esc(p.categoria)+'</div><div class="title">'+esc(p.nome)+'</div><div class="desc">'+esc(p.descricao)+'</div><div class="prices">'+(o>v?'<span class="old">'+esc(p.preco_anterior)+'</span>':'')+'<span class="price">'+esc(p.preco)+'</span>'+(d?'<span class="discount">-'+d+'%</span>':'')+'</div><div class="partner">Disponível em '+esc(p.parceiro)+'</div><a class="btn" href="'+esc(p.url)+'" target="_blank" rel="noopener noreferrer sponsored" onclick="track(\\''+esc(p.nome)+'\\',\\''+esc(p.parceiro)+'\\')">Ver produto →</a></div></article>'}
+function card(p){let o=num(p.preco_anterior),v=num(p.preco),d=o>v?Math.round((1-v/o)*100):0;return '<article class="card"><div class="pic"><img src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">'+((p.destaque||"").toUpperCase()=="SIM"?'<span class="badge">⭐ Destaque</span>':'')+'</div><div class="body"><div class="cat">'+esc(p.categoria)+'</div><div class="title">'+esc(p.nome)+'</div><div class="desc">'+esc(p.descricao)+'</div><div class="prices">'+(o>v?'<span class="old">'+esc(p.preco_anterior)+'</span>':'')+'<span class="price">'+esc(p.preco)+'</span>'+(d?'<span class="discount">-'+d+'%</span>':'')+'</div><div class="partner">Disponível em '+esc(p.parceiro)+'</div><a class="btn" href="'+esc(p.url)+'" target="_blank" rel="noopener noreferrer sponsored" onclick="track(\''+esc(p.nome)+'\',\''+esc(p.parceiro)+'\')">Ver produto →</a></div></article>'}
 function track(product,partner){if(window.gtag)gtag('event','partner_click',{product_name:product,partner:partner})}
 document.getElementById("brand").textContent=BRAND_NAME;document.getElementById("subtitle").textContent=SUBTITLE;
 load().catch(()=>document.getElementById("grid").innerHTML='<div class="empty">Erro ao carregar o Google Sheets.</div>');
