@@ -2,8 +2,8 @@
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SOFY 40+</title>
-<meta name="description" content="SOFY 40+ e ofertas das nossas lojas parceiras.">
+<title>Diário da Sofy</title>
+<meta name="description" content="Diário da SOFY">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f6f6f7;color:#171717;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
 header{background:#111;color:#fff;text-align:center;padding:32px 16px}h1{margin:0;font-size:28px}header p{color:#ccc;margin:8px auto;max-width:650px}
@@ -20,7 +20,7 @@ footer{text-align:center;color:#888;font-size:12px;padding:25px}
 </style>
 </head>
 <body>
-<header><h1 id="brand">Descontos e Promoções</h1><p id="subtitle">SOFY 40+</p></header>
+<header><h1 id="brand">Links e Descontos</h1><p id="subtitle">Diário da Sofy</p></header>
 <main>
 <div class="controls">
 <input id="search" placeholder="🔎 Pesquisar produtos..." oninput="render()">
@@ -42,8 +42,8 @@ footer{text-align:center;color:#888;font-size:12px;padding:25px}
    A folha também tem de estar partilhada como "Qualquer pessoa com o link" (leitor).
 */
 const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1EOmLMeyr1qAnZreTuKBlGpbbcYQzy-HrH9Nlu7U2ato/export?format=csv&gid=0";
-const BRAND_NAME="SOFY 40+";
-const SUBTITLE="As nossas sugestões, com ligação direta às lojas parceiras.";
+const BRAND_NAME="Diário da Sofy";
+const SUBTITLE="Links e Descontos";
 let products=[],selectedCategory="";
 function parseCSV(t){let a=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let x=t[i],n=t[i+1];if(x=='"'&&q&&n=='"'){c+='"';i++}else if(x=='"')q=!q;else if(x==','&&!q){r.push(c);c=""}else if((x=='\n'||x=='\r')&&!q){if(x=='\r'&&n=='\n')i++;r.push(c);if(r.some(v=>v.trim()))a.push(r);r=[];c=""}else c+=x}if(c||r.length){r.push(c);a.push(r)}let h=a.shift().map(v=>v.trim().toLowerCase());return a.map(v=>Object.fromEntries(h.map((k,i)=>[k,(v[i]||"").trim()])))}
 function num(v){return parseFloat(String(v||"").replace(/[^\d,.-]/g,"").replace(/\.(?=\d{3}(?:\D|$))/g,"").replace(",", "."))||0}
