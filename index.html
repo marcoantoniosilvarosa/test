@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Diário da Sofy</title>
-<meta name="description" content="Diário da SOFY">
+<meta name="description" content="Links e descontos">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f6f6f7;color:#171717;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
 header{background:#111;color:#fff;text-align:center;padding:32px 16px}h1{margin:0;font-size:28px}header p{color:#ccc;margin:8px auto;max-width:650px}
 main{max-width:1180px;margin:auto;padding:20px 14px 40px}.controls{display:flex;gap:10px;flex-wrap:wrap}
 input,select{padding:13px;border:1px solid #ddd;border-radius:12px;background:#fff;font-size:15px}input{flex:1;min-width:220px}
 .cats{display:flex;gap:8px;overflow:auto;padding:15px 0}.cats button{border:1px solid #ddd;background:#fff;border-radius:99px;padding:9px 14px;white-space:nowrap}.cats .active{background:#111;color:#fff}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 3px 16px #0001;display:flex;flex-direction:column}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,280px));gap:18px;justify-content:center}.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 3px 16px #0001;display:flex;flex-direction:column}
 .pic{position:relative;background:#eee}.pic img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.badge{position:absolute;top:10px;left:10px;background:#111;color:#fff;padding:6px 9px;border-radius:8px;font-size:12px}
 .body{padding:15px;display:flex;flex-direction:column;flex:1}.cat{font-size:11px;color:#777;text-transform:uppercase}.title{font-size:18px;font-weight:750;margin:5px 0}.desc{font-size:14px;color:#777;line-height:1.4;min-height:40px}
 .prices{display:flex;align-items:baseline;gap:8px;margin:11px 0}.old{text-decoration:line-through;color:#999;font-size:14px}.price{font-size:21px;font-weight:850}.discount{font-size:12px;font-weight:750}
@@ -20,7 +20,7 @@ footer{text-align:center;color:#888;font-size:12px;padding:25px}
 </style>
 </head>
 <body>
-<header><h1 id="brand">Links e Descontos</h1><p id="subtitle">Diário da Sofy</p></header>
+<header><h1 id="brand">Links e descontos</h1><p id="subtitle">Diário da Sofy</p></header>
 <main>
 <div class="controls">
 <input id="search" placeholder="🔎 Pesquisar produtos..." oninput="render()">
@@ -43,7 +43,7 @@ footer{text-align:center;color:#888;font-size:12px;padding:25px}
 */
 const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1EOmLMeyr1qAnZreTuKBlGpbbcYQzy-HrH9Nlu7U2ato/export?format=csv&gid=0";
 const BRAND_NAME="Diário da Sofy";
-const SUBTITLE="Links e Descontos";
+const SUBTITLE="Li ks e descontos";
 let products=[],selectedCategory="";
 function parseCSV(t){let a=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let x=t[i],n=t[i+1];if(x=='"'&&q&&n=='"'){c+='"';i++}else if(x=='"')q=!q;else if(x==','&&!q){r.push(c);c=""}else if((x=='\n'||x=='\r')&&!q){if(x=='\r'&&n=='\n')i++;r.push(c);if(r.some(v=>v.trim()))a.push(r);r=[];c=""}else c+=x}if(c||r.length){r.push(c);a.push(r)}let h=a.shift().map(v=>v.trim().toLowerCase());return a.map(v=>Object.fromEntries(h.map((k,i)=>[k,(v[i]||"").trim()])))}
 function num(v){return parseFloat(String(v||"").replace(/[^\d,.-]/g,"").replace(/\.(?=\d{3}(?:\D|$))/g,"").replace(",", "."))||0}
