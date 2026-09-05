@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#e0227a">
+<title>Diário da Sofy</title>
+<meta name="description" content="Links e descontos">
+<style>
+:root{--pink:#e0227a;--pink-dark:#b81862;--pink-light:#fdf1f7;--pink-pale:#fbe6f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pink-pale);color:#171717;font-family:system-ui,-apple-system,Segoe UI,sans-serif;-webkit-text-size-adjust:100%}
+
+/* ===== Cabeçalho estilo Linktree: avatar + nome + bio centrados ===== */
+.profile{max-width:560px;margin:0 auto;padding:clamp(28px,8vw,44px) 20px 8px;text-align:center}
+.ig-avatar-link{display:inline-block;border-radius:50%;padding:3px;background:linear-gradient(135deg,var(--pink),var(--pink-dark))}
+.ig-avatar{width:clamp(64px,20vw,92px);height:clamp(64px,20vw,92px);border-radius:50%;display:block;object-fit:cover;background:#fff;border:3px solid #fff}
+.profile h1{margin:14px 0 0;font-size:clamp(19px,5vw,23px);font-weight:800}
+.profile p{margin:4px 0 0;color:#8a5068;font-size:14px}
+
+/* ===== Barra de pesquisa e categorias, em coluna estreita centrada ===== */
+main{max-width:560px;margin:0 auto;padding:18px 16px 40px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+input,select{padding:12px 14px;border:1px solid #f3c6dd;border-radius:99px;background:#fff;font-size:16px}
+input{flex:1 1 180px;min-width:0}
+select{flex:1 1 150px}
+input:focus,select:focus{outline:none;border-color:var(--pink)}
+
+.cats{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.cats::-webkit-scrollbar{height:4px}
+.cats button{border:1px solid #f3c6dd;background:#fff;color:#171717;border-radius:99px;padding:8px 14px;white-space:nowrap;font-size:13px;flex:0 0 auto;min-height:36px}
+.cats .active{background:var(--pink);border-color:var(--pink);color:#fff}
+
+.count{font-size:12px;color:#a05a78;margin:8px 2px 12px;text-align:center}
+
+/* ===== Lista de "links" estilo Linktree: cartões empilhados em coluna única ===== */
+.grid{display:flex;flex-direction:column;gap:12px}
+
+.row{position:relative;display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:10px;text-decoration:none;color:inherit;box-shadow:0 2px 10px #0000000d;border:1px solid #f7dceb;transition:transform .12s ease,box-shadow .12s ease}
+.row:active{transform:scale(.98)}
+@media(hover:hover){.row:hover{box-shadow:0 6px 18px #e0227a26;border-color:var(--pink)}}
+
+.thumb{position:relative;width:60px;height:60px;flex:0 0 auto;border-radius:14px;background:var(--pink-light);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:contain;padding:4px;display:block}
+.badge{position:absolute;top:-6px;left:-6px;background:var(--pink);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;box-shadow:0 1px 4px #0002}
+
+.info{flex:1;min-width:0}
+.title{font-size:14.5px;font-weight:700;line-height:1.25;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sub{font-size:11.5px;color:#a05a78;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prices{display:flex;align-items:baseline;gap:6px;margin-top:5px;flex-wrap:wrap}
+.old{text-decoration:line-through;color:#bbb;font-size:11.5px}
+.price{font-size:15.5px;font-weight:850;color:var(--pink-dark)}
+.discount{font-size:10.5px;font-weight:750;color:#fff;background:var(--pink);padding:2px 6px;border-radius:99px}
+
+.chev{flex:0 0 auto;color:var(--pink);font-size:20px;font-weight:700;padding-right:2px}
+
+.empty{text-align:center;padding:40px 16px;color:#a05a78}
+footer{text-align:center;color:#c084a8;font-size:11px;padding:22px 16px}
+</style>
+</head>
+<body>
+<div class="profile">
+<a id="igLink" class="ig-avatar-link" href="#" target="_blank" rel="noopener noreferrer">
+<img id="igAvatar" class="ig-avatar" src="" alt="Foto de perfil Instagram" onerror="this.closest('.ig-avatar-link').style.display='none'">
+</a>
+<h1 id="brand">Links e descontos</h1>
+<p id="subtitle">Diário da Sofy</p>
+</div>
+<main>
+<div class="controls">
+<input id="search" placeholder="🔎 Pesquisar produtos..." oninput="render()">
+<select id="sort" onchange="render()">
+<option value="featured">Destaques primeiro</option><option value="priceAsc">Preço menor → maior</option>
+<option value="priceDesc">Preço maior → menor</option><option value="name">Nome A → Z</option>
+</select>
+</div>
+<div id="cats" class="cats"></div>
+<div id="count" class="count"></div>
+<div id="grid" class="grid"></div>
+</main>
+<footer>Alguns links podem ser links de afiliado. A compra é efetuada diretamente no parceiro.</footer>
+<script>
+/* IMPORTANTE:
+   O URL abaixo tem de ser o de EXPORTAÇÃO em CSV da Google Sheet, não o link de partilha/visualização.
+   Formato: https://docs.google.com/spreadsheets/d/SEU_ID/export?format=csv&gid=SEU_GID
+   - SEU_ID: o ID que aparece no URL da folha (entre /d/ e /edit)
+   - gid=0 corresponde normalmente à primeira aba; se os dados estiverem noutra aba, muda o gid
+     (vê o número depois de "gid=" no URL da folha quando tens essa aba aberta)
+   A folha também tem de estar partilhada como "Qualquer pessoa com o link" (leitor).
+*/
+const SHEET_CSV_URL="https://docs.google.com/spreadsheets/d/1EOmLMeyr1qAnZreTuKBlGpbbcYQzy-HrH9Nlu7U2ato/export?format=csv&gid=0";
+const BRAND_NAME="Diário da Sofy";
+const SUBTITLE="Links e descontos";
+
+/* INSTAGRAM:
+   O Instagram bloqueia o carregamento direto da foto de perfil a partir de outro site (hotlinking/CORB).
+   Para mostrares a tua foto aqui:
+   1) Faz upload da foto a um alojamento de imagens que sirva o ficheiro diretamente
+      (ex: imgur.com — depois de carregar, clica com o botão direito na imagem e
+      "Copiar endereço da imagem"; o link deve terminar em .jpg/.png)
+   2) Cola esse link direto em INSTAGRAM_AVATAR_URL abaixo
+   Links do Google Drive/Google Photos normalmente NÃO funcionam (bloqueio CORB).
+   Se deixares vazio, o espaço da foto fica automaticamente escondido.
+*/
+const INSTAGRAM_URL="https://www.instagram.com/SEU_USERNAME/";
+const INSTAGRAM_AVATAR_URL="";
+
+let products=[],selectedCategory="";
+function parseCSV(t){let a=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let x=t[i],n=t[i+1];if(x=='"'&&q&&n=='"'){c+='"';i++}else if(x=='"')q=!q;else if(x==','&&!q){r.push(c);c=""}else if((x=='\n'||x=='\r')&&!q){if(x=='\r'&&n=='\n')i++;r.push(c);if(r.some(v=>v.trim()))a.push(r);r=[];c=""}else c+=x}if(c||r.length){r.push(c);a.push(r)}let h=a.shift().map(v=>v.trim().toLowerCase());return a.map(v=>Object.fromEntries(h.map((k,i)=>[k,(v[i]||"").trim()])))}
+function num(v){return parseFloat(String(v||"").replace(/[^\d,.-]/g,"").replace(/\.(?=\d{3}(?:\D|$))/g,"").replace(",", "."))||0}
+function esc(s=""){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function demo(){return[{ativo:"SIM",nome:"Produto de exemplo",categoria:"Destaques",imagem:"https://placehold.co/700x700?text=Produto",preco:"199,90 €",preco_anterior:"249,90 €",descricao:"Substitua este produto pelos seus dados.",parceiro:"Loja parceira",url:"https://example.com",destaque:"SIM"}]}
+async function load(){products=SHEET_CSV_URL.startsWith("COLE_")?demo():parseCSV(await(await fetch(SHEET_CSV_URL)).text());buildCats();render()}
+function buildCats(){let c=[...new Set(products.filter(p=>p.ativo.toUpperCase()=="SIM").map(p=>p.categoria).filter(Boolean))].sort();document.getElementById("cats").innerHTML='<button class="active" onclick="setCat(this,\'\')">Todos</button>'+c.map(x=>'<button onclick="setCat(this,\''+esc(x)+'\')">'+esc(x)+'</button>').join("")}
+function setCat(e,c){selectedCategory=c;document.querySelectorAll(".cats button").forEach(x=>x.classList.remove("active"));e.classList.add("active");render()}
+function render(){let q=document.getElementById("search").value.toLowerCase(),s=document.getElementById("sort").value;
+let a=products.filter(p=>p.ativo.toUpperCase()=="SIM"&&(!selectedCategory||p.categoria==selectedCategory)&&(!q||[p.nome,p.descricao,p.parceiro,p.categoria].join(" ").toLowerCase().includes(q)));
+a.sort((x,y)=>s=="priceAsc"?num(x.preco)-num(y.preco):s=="priceDesc"?num(y.preco)-num(x.preco):s=="name"?x.nome.localeCompare(y.nome,"pt"):((y.destaque||"").toUpperCase()=="SIM")-((x.destaque||"").toUpperCase()=="SIM"));
+document.getElementById("count").textContent=a.length+" produto"+(a.length==1?"":"s");document.getElementById("grid").innerHTML=a.length?a.map(card).join(""):'<div class="empty">Nenhum produto encontrado.</div>'}
+function card(p){let o=num(p.preco_anterior),v=num(p.preco),d=o>v?Math.round((1-v/o)*100):0;
+return '<a class="row" href="'+esc(p.url)+'" target="_blank" rel="noopener noreferrer sponsored" onclick="track(\''+esc(p.nome)+'\',\''+esc(p.parceiro)+'\')">'
++'<div class="thumb"><img src="'+esc(p.imagem)+'" alt="'+esc(p.nome)+'" loading="lazy">'+((p.destaque||"").toUpperCase()=="SIM"?'<span class="badge">⭐</span>':'')+'</div>'
++'<div class="info">'
++'<div class="title">'+esc(p.nome)+'</div>'
++'<div class="sub">'+esc(p.parceiro)+(p.categoria?' · '+esc(p.categoria):'')+'</div>'
++'<div class="prices">'+(o>v?'<span class="old">'+esc(p.preco_anterior)+'</span>':'')+'<span class="price">'+esc(p.preco)+'</span>'+(d?'<span class="discount">-'+d+'%</span>':'')+'</div>'
++'</div>'
++'<div class="chev">›</div>'
++'</a>'}
+function track(product,partner){if(window.gtag)gtag('event','partner_click',{product_name:product,partner:partner})}
+
+document.getElementById("brand").textContent=BRAND_NAME;
+document.getElementById("subtitle").textContent=SUBTITLE;
+document.getElementById("igLink").href=INSTAGRAM_URL;
+if(INSTAGRAM_AVATAR_URL){document.getElementById("igAvatar").src=INSTAGRAM_AVATAR_URL}else{document.querySelector(".ig-avatar-link").style.display="none"}
+
+load().catch(()=>document.getElementById("grid").innerHTML='<div class="empty">Erro ao carregar o Google Sheets.</div>');
+</script></body></html>
